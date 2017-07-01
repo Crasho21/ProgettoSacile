@@ -73,9 +73,11 @@ Z2=[0 0 10]';
 %compute G;
 G(:,T+1)=C*Q{T + 1}*Z;
 E=Bd*inv(R)*Bd';
+
 for k = 1 : T + 1
     W{k} = C' * Q{k};
 end
+
 for k=T:-1:1
     if (k == 2)
         G(:,k)=Ad'*(eye(3)-inv(inv(P(:,:,k+1))...

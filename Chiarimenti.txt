@@ -1,0 +1,32 @@
+Esercizio 2:
+
+definire A e B
+C identica
+consideriamo u1 u2 u5 u6
+fare riccati
+calcolare controllo e stato ottimi
+k=1000 (da variare per vedere le differenze sul risultato della riga sotto)
+fare k(u5-u4-u3)^2 per il vincolo u5~u4-u3
+
+
+
+DA CHIEDERE:
+Come definire B e x?(a caso?) B come nel sistema, x a caso, ma non zero, altrimenti non fa nulla
+Come implementare i vincoli? (in R)
+
+-Per punto es 2.2
+Cosa e come fare Qn e Rn?
+Perche in lqg_discreto_finito per discretizzare usa solo sys = ss (cose);?
+mvnrnd cosa fa?
+sigma di xo come si ottiene?
+filtro di kalman?
+V=Q?
+
+-Per punto es 2.4
+Informazioni sul PID? formule? perche quei conti?
+
+
+Esercizio 3:
+
+discretizzare il sistema (funzione c2d o formula e^At...)
+applichiamo tracking

@@ -95,6 +95,14 @@ for t=1:(orizz-2)
     
     u(:,t) = L(:,:,t)*mu(:,t);
     
+    for i=1:length(u(:,t))
+        if(u(i,t) > 1)
+            u(i,t) = 1;
+        elseif(u(i,t) < -1)
+            u(i,t) = -1;
+        end
+    end
+    
     %parte del sistema... la x non la vedo nel controllo!;
     x(:,t+1)=A*x(:,t)-B*L(:,:,t)*mu(:,t)+ xsi(:,t);
     y(:,t+1)=C*x(:,t+1)+eta(:,t+1);
