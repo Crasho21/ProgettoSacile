@@ -5,7 +5,7 @@ A = eye(3);
 %Consideriamo solo u1 u2 u5 u6 come variabili di controllo, dato che u3 e
 %u4 dipendono da u2
 B = [ 1 -3  0  0
-      0 -8  0  0
+      0 -7  0  0
       0 10  1 -1];
 %Sistema completamente osservabile => C = I
 C = eye(3);
@@ -50,8 +50,6 @@ end
 x(:,1)=[4 7 2]';
 for t = 1 : T
     u(:, t) = - K(:, :, t) * x(:, t);
-    %u(3, t) = 8 * u(2, t);
-    %u(4, t) = 2 * u(2, t);
     x(:, t + 1) = A * x(:, t) + B * u(:, t);
 end
 
