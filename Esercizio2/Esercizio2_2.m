@@ -1,9 +1,9 @@
 clear;
 clc;
 
-%intervallo di dicretizzazione delta_t;
+%Intervallo di dicretizzazione;
 delta_t=0.1;
-%orizzonte da 0 a 59 secondi;
+%Orizzonte temporale;
 orizz=9;
 
 A = eye(3);
@@ -15,6 +15,7 @@ B = [ 1 -3  0  0
 C = [1  0  0
      0  0 -1];
 D = zeros(2,4); 
+
 sys = ss(A,B,C,D,delta_t);
 
 nx = size(A,2);    %Number of states
@@ -24,7 +25,6 @@ ny = size(C,1);    %Number of outputs
 Qn = [4 2 0; 2 1 0; 0 0 1];
 Rn = [1.4 0; 0 3];
 
-R = 1;
 ro = 0.1;
 R = ro * [1    0    0    0
           0  101    0  -10
@@ -38,7 +38,7 @@ QXU = blkdiag(Q,R);
 QWV = blkdiag(Qn,Rn);
 
 %------------------------------------------------------
-%calcolo la matrice di riccati;
+%Calcolo la matrice di riccati;
 P(:,:,orizz-1)=F;
 E=B*inv(R)*B';
 V=Q;
@@ -47,25 +47,25 @@ for i=orizz-2:-1:1
    P(:,:,i)=A'*P(:,:,i+1)*inv(I+E*P(:,:,i+1))*A+V;
 end
 
-%calcolo la retroazione ottima di riccati;
+%Calcolo la retroazione ottima di riccati;
 for t=1:(orizz-2)
     L(:,:,t)=R^-1 * B'* (A')^-1*(P(:,:,t)-Q);
 end
 
-%serve?
 %verifico con P infinito;
 [L_INF,P_INF,e] = dlqr(A,B,Q,R,0);
 
 %------------------------------------------------------
-% %kalman
+%Filtro di Kalman
 % 
-%genero il rumore
+%Generazione del rumore
 media = [0 ,0, 0];
-rng default  % For reproducibility
+rng default  % Per rispoducibilita
 
+%Genero dei numeri random per il rumore
 xsi = mvnrnd(media,Qn,orizz-1)';
 eta = mvnrnd(media(1:ny),Rn, orizz-1)';
-%media_x0 e covarianza x0;
+%Media_x0 e Covarianza x0;
 alfa=[3; 1; 0];
 sigma_x0=[1 0 0;
           0 1.5 1;
@@ -79,11 +79,11 @@ sigma=zeros(nx, nx, orizz-1);
 sigma(:,:,1)=inv(inv(sigma_x0)+C'*inv(Rn)*C);
 k(:,:,1)=sigma(:,:,1)*C'*inv(Rn);
 
-y=zeros(2,orizz-2);
+y=zeros(2,orizz-1);
 
 u=zeros(4,orizz-1);
 
-%osservo y0;
+%Osservo y0;
 y(:,1)=[4 -2]; %Valori presi dalle equazioni dell'esercizio, calcolati su x(:,1)
 x(:,1)=[4 7 2]';
 
@@ -93,24 +93,23 @@ x(:,1)=[4 7 2]';
 mu(:,1)=alfa+k(:,:,1)*(y(1,1)-C*alfa);
 for t=1:(orizz-2)
     
-    u(:,t) = L(:,:,t)*mu(:,t);
+    u(:,t) = -L(:,:,t)*mu(:,t);
     
-    %parte del sistema... la x non la vedo nel controllo!;
-    x(:,t+1)=A*x(:,t)-B*L(:,:,t)*mu(:,t)+ xsi(:,t);
+    %Parte del sistema... la x non la vedo nel controllo!;
+    x(:,t+1)=A*x(:,t)+B*u(:,t)+ xsi(:,t);
     y(:,t+1)=C*x(:,t+1)+eta(:,t+1);
-    %parte del controllo stimando lo stato;
+    %Parte del controllo stimando lo stato;
     sigma(:,:,t+1)=inv(inv(A*sigma(:,:,t)*A'+Qn)+C'*inv(Rn)*C);
     k(:,:,t+1)=sigma(:,:,t+1)*C'*inv(Rn);
-    mu(:,t+1)=A*mu(:,t)-B*L(:,:,t)*mu(:,t)+ k(:,:,t+1)*(y(1,t+1)-C*(A*mu(:,t)-B*L(:,:,t)*mu(:,t)));
+    mu(:,t+1)=A*mu(:,t)+B*u(:,t)+ k(:,:,t+1)*(y(1,t+1)-C*(A*mu(:,t)+B*u(:,t)));
     
-    % non serve usare il filtro di kalman
+    %Per x1 e x3 non e' necessario usare kalman
     mu(1,t+1) = y(1,t+1);
     mu(3,t+1) = -1*y(2,t+1);
     
 end
 
-%eqm tra x e mu;
-% eqm:  errore quadratico medio
+%eqm(errore quadratico medio) tra x e mu;
 for t=1:(orizz-2)
     eqm(:,t)=(x(:,t)-mu(:,t))'*(x(:,t)-mu(:,t));
 end

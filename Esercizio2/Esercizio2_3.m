@@ -83,7 +83,7 @@ y=zeros(2,orizz-2);
 
 u=zeros(4,orizz-1);
 
-%osservo y0;
+%Osservo y0;
 y(:,1)=[4 -2]; %Valori presi dalle equazioni dell'esercizio, calcolati su x(:,1)
 x(:,1)=[4 7 2]';
 
@@ -93,7 +93,7 @@ x(:,1)=[4 7 2]';
 mu(:,1)=alfa+k(:,:,1)*(y(1,1)-C*alfa);
 for t=1:(orizz-2)
     
-    u(:,t) = L(:,:,t)*mu(:,t);
+    u(:,t) = -L(:,:,t)*mu(:,t);
     
     for i=1:length(u(:,t))
         if(u(i,t) > 1)
@@ -103,22 +103,21 @@ for t=1:(orizz-2)
         end
     end
     
-    %parte del sistema... la x non la vedo nel controllo!;
-    x(:,t+1)=A*x(:,t)-B*L(:,:,t)*mu(:,t)+ xsi(:,t);
+    %Parte del sistema... la x non la vedo nel controllo!;
+    x(:,t+1)=A*x(:,t)+B*u(:,t)+ xsi(:,t);
     y(:,t+1)=C*x(:,t+1)+eta(:,t+1);
-    %parte del controllo stimando lo stato;
+    %Parte del controllo stimando lo stato;
     sigma(:,:,t+1)=inv(inv(A*sigma(:,:,t)*A'+Qn)+C'*inv(Rn)*C);
     k(:,:,t+1)=sigma(:,:,t+1)*C'*inv(Rn);
-    mu(:,t+1)=A*mu(:,t)-B*L(:,:,t)*mu(:,t)+ k(:,:,t+1)*(y(1,t+1)-C*(A*mu(:,t)-B*L(:,:,t)*mu(:,t)));
+    mu(:,t+1)=A*mu(:,t)+B*u(:,t)+ k(:,:,t+1)*(y(1,t+1)-C*(A*mu(:,t)+B*u(:,t)));
     
-    % non serve usare il filtro di kalman
+    %Per x1 e x3 non e' necessario usare kalman
     mu(1,t+1) = y(1,t+1);
     mu(3,t+1) = -1*y(2,t+1);
     
 end
 
-%eqm tra x e mu;
-% eqm:  errore quadratico medio
+%eqm(errore quadratico medio) tra x e mu;
 for t=1:(orizz-2)
     eqm(:,t)=(x(:,t)-mu(:,t))'*(x(:,t)-mu(:,t));
 end

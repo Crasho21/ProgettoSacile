@@ -41,9 +41,7 @@ u = zeros(3, T);
 
 x0 = [2 -4 1]';
 
-%solve the problem at finite horizon;
-%discrete time:
-%solve the RICCATI equation at the difference
+%Risolvo le equazioni alle differenze usando RICCATI
 P(:,:,T+1)=Q;
 
 for i=T:-1:1
@@ -57,10 +55,10 @@ for i=1:T
 end
 
 
-%tracking value varing with time;
+%Traccio il valore desiderato
 Z=[10 0 0]';
 
-%compute G;
+%Calcolo di G;
 G(:,T+1)=C*Q*Z;
 E=Bd*inv(R)*Bd';
 
@@ -70,13 +68,13 @@ for k=T:-1:1
     G(:,k)=Ad'*(eye(3)-inv(inv(P(:,:,k+1)) +E)*E)*G(:,k+1)+W*Z;
 end
 
-%compute LG;
+%Calcolo di LG;
 for k=1:T
     LG(:,:,k)=inv(R+Bd'*P(:,:,k+1)*Bd)...
     *Bd';
 end
 
-%evolution of the system in control loop
+%Evoluzione del sistema in control loop
 x(:,1)=x0;
 for k=1:T
     x(:,k+1)=(Ad-Bd*Kd_fin(:,:,k))*x(:,k)+...
