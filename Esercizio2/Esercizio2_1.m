@@ -4,9 +4,9 @@ clc;
 A = eye(3);
 %Consideriamo solo u1 u2 u5 u6 come variabili di controllo, dato che u3 e
 %u4 dipendono da u2
-B = [ 1 -3  0  0
-      0 -7  0  0
-      0 10  1 -1];
+B = [1 -3  0  0
+     0 -7  0  0
+     0 10  1 -1];
 %Sistema completamente osservabile => C = I
 C = eye(3);
 
@@ -17,9 +17,9 @@ QF = Q;
 %ro = 0.0001 => convergenza in un passo
 ro = 0.1;
 R = ro * [1    0    0    0
-          0  101    0  -10
-          0    0    1    0
-          0  -10    0    1];
+          0  101  -10    0
+          0  -10    1    0
+          0    0    0    1];
 
 %Orizzonte da raggiungere
 T = 7;
@@ -27,7 +27,7 @@ T = 7;
 x = zeros(3, T + 1);
 u = zeros(4, T);
 %Costi
-Jstate = zeros(1,T + 1);
+Jstate = zeros(1, T + 1);
 Jcontrol = zeros(1, T);
 
 %Calcolo matrice P Riccati
@@ -47,7 +47,7 @@ for t = 1 : T
 end
  
 %Calcolo dello stato e del controllo
-x(:,1)=[4 7 2]';
+x(:,1) = [4 7 2]';
 for t = 1 : T
     u(:, t) = - K(:, :, t) * x(:, t);
     x(:, t + 1) = A * x(:, t) + B * u(:, t);

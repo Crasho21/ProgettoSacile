@@ -77,7 +77,7 @@ end
 [Go0, percorsi{1, 1}(1, 1)] = min(G0);
 
 %Stampo il costo ottimo
-disp(['Costo Ottimo = ', num2str(Go0)]);
+disp(['Costo ottimo = ', num2str(Go0)]);
 
 %Creo il testo contenente il percorso ottimo
 index = 1;
